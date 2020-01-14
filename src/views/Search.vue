@@ -12,16 +12,23 @@
         @input="handleInput"
       />
       <label for="name">
-        <span class="label-name">Name</span>
+        <span class="label-name">Search</span>
       </label>
     </div>
+    <ul class="listing">
+        <li v-for="item in results" :key="item.data[0].nasa_id" >
+            <p>{{ item.data[0].description }}</p>
+        </li>
+    </ul>
   </div>
 </template>
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue';
+import axios from 'axios';
+import debounce from 'lodash.debounce';
 
-const API = 'https://images-api.nasa.gov';
+const API = 'https://images-api.nasa.gov/search';
 console.log(API);
 
 export default {
@@ -29,19 +36,26 @@ export default {
   data() {
     return {
       searchValue: '',
+      results: [],
     };
   },
   methods: {
-    handleInput() {
-    //   console.log(`handleInput: ${e.target.value}`);
-      console.log(`handleInput: ${this.searchValue}`);
-    },
+    handleInput: debounce(function fn() {
+      axios
+        .get(`${API}?q=${this.searchValue}&media_type=image`)
+        .then((response) => {
+          this.results = response.data.collection.items;
+          console.log(response.data.collection.items);
+          return true;
+        })
+        .catch(error => console.log(error));
+    }, 500),
   },
 };
 </script>
 
-<style lang="scss" scoped>
-@import url("https://fonts.googleapis.com/css?family=Rubik:300,300i,400,400i,500,500i,700,700i,900,900i&display=swap&subset=latin-ext");
+<style lang='scss' scoped>
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,300i,400,400i,500,500i,700,700i,900,900i&display=swap&subset=latin-ext');
 
 body {
   font-family: "Rubik", sans-serif;
@@ -118,5 +132,8 @@ body {
   &:valid + label:after {
     transform: translateX(0);
   }
+}
+.listing {
+    list-style-type: none;
 }
 </style>
