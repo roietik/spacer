@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <h2>This is an about page</h2>
+    <h2>This is a search page</h2>
     <div class="form">
       <input
         class="content-name"
@@ -40,7 +40,8 @@ export default {
     };
   },
   methods: {
-    handleInput: debounce(function fn() {
+    // eslint-disable-next-line
+    handleInput: debounce(function() {
       axios
         .get(`${API}?q=${this.searchValue}&media_type=image`)
         .then((response) => {
